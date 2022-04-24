@@ -58,23 +58,23 @@ export class VIF {
     return { headers, data };
   }
 
-  async get<T = any>(url: string, options: Omit<Options, 'method' | 'body'>) {
+  async get<T = any>(url: string, options?: Omit<Options, 'method' | 'body'>) {
     return this.fetch<T>(url, { ...options, method: 'GET' });
   }
 
-  async post<T = any>(url: string, options: Omit<Options, 'method'>) {
+  async post<T = any>(url: string, options?: Omit<Options, 'method'>) {
     return this.fetch<T>(url, { ...options, method: 'POST' });
   }
 
-  async put<T = any>(url: string, options: Omit<Options, 'method'>) {
+  async put<T = any>(url: string, options?: Omit<Options, 'method'>) {
     return this.fetch<T>(url, { ...options, method: 'PUT' });
   }
 
-  async patch<T = any>(url: string, options: Omit<Options, 'method'>) {
+  async patch<T = any>(url: string, options?: Omit<Options, 'method'>) {
     return this.fetch<T>(url, { ...options, method: 'PATCH' });
   }
 
-  async delete<T = any>(url: string, options: Omit<Options, 'method' | 'body'>) {
+  async delete<T = any>(url: string, options?: Omit<Options, 'method' | 'body'>) {
     return this.fetch<T>(url, { ...options, method: 'DELETE' });
   }
 }
