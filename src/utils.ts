@@ -15,7 +15,7 @@ export const makeHeaders = (
 ) => {
   let customHeaders: Record<string, any> = {};
 
-  if (optionsBody && typeof 'body' === 'object') {
+  if (optionsBody && typeof optionsBody === 'object') {
     customHeaders['content-type'] = 'application/json';
   }
 
