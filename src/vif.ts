@@ -13,39 +13,60 @@ export class VIF {
   private baseUrl: string;
   private headers?: Record<string, any>;
   private beforeRequest?: (options: Options) => void;
+  private afterResponse?: ({
+    headers,
+    data,
+  }: {
+    data: any;
+    headers: Record<string, any>;
+  }) => void;
 
   constructor({
     baseUrl,
     headers,
     beforeRequest,
+    afterResponse,
   }: {
     baseUrl: string;
     headers?: Record<string, any>;
     beforeRequest?: (options: Options) => void;
+    afterResponse?: ({
+      headers,
+      data,
+    }: {
+      data: any;
+      headers: Record<string, any>;
+    }) => void;
   }) {
     this.baseUrl = baseUrl;
     this.headers = headers;
     this.beforeRequest = beforeRequest;
+    this.afterResponse = afterResponse;
   }
 
   async fetch<T = any>(
     url: string,
-    options: Options = {},
+    options: Options = {}
   ): Promise<{ data: T; headers: Record<string, any> }> {
     if (this.beforeRequest) {
       await this.beforeRequest(options);
     }
 
-    const res = await fetch(`${this.baseUrl}/${url}${makeSearchString(options.searchParams)}`, {
-      method: options.method,
-      headers: makeHeaders(this.headers, options.headers, options.body),
-      body: makeBody(options.body),
-      signal: options.signal,
-    });
+    const res = await fetch(
+      `${this.baseUrl}/${url}${makeSearchString(options.searchParams)}`,
+      {
+        method: options.method,
+        headers: makeHeaders(this.headers, options.headers, options.body),
+        body: makeBody(options.body),
+        signal: options.signal,
+      }
+    );
 
     const headers = Object.fromEntries(res.headers.entries());
 
-    const data = headers['content-type'].includes('application/json') ? await res.json() : null;
+    const data = headers['content-type'].includes('application/json')
+      ? await res.json()
+      : null;
 
     if (!res.ok) {
       throw new HttpError({
@@ -53,6 +74,10 @@ export class VIF {
         message: data.message ?? res.statusText ?? 'Unknown error',
         code: data.code,
       });
+    }
+
+    if (this.afterResponse) {
+      await this.afterResponse({ headers, data });
     }
 
     return { headers, data };
@@ -74,7 +99,10 @@ export class VIF {
     return this.fetch<T>(url, { ...options, method: 'PATCH' });
   }
 
-  async delete<T = any>(url: string, options?: Omit<Options, 'method' | 'body'>) {
+  async delete<T = any>(
+    url: string,
+    options?: Omit<Options, 'method' | 'body'>
+  ) {
     return this.fetch<T>(url, { ...options, method: 'DELETE' });
   }
 }
