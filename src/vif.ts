@@ -1,53 +1,66 @@
 import { HttpError } from './http-error';
+import { Options } from './types';
 import { makeBody, makeHeaders, makeSearchString } from './utils';
-
-type Options = {
-  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  headers?: Record<string, any>;
-  body?: Record<string, any> | FormData;
-  searchParams?: Record<string, any>;
-  signal?: AbortSignal;
-};
 
 export class VIF {
   private baseUrl: string;
-  private headers?: Record<string, any>;
+  private headers?: Options['headers'];
   private beforeRequest?: (options: Options) => void;
+  beforeError?: ({
+    error,
+    headers,
+    data,
+  }: {
+    error: HttpError;
+    data: any;
+    headers: Options['headers'];
+  }) => void;
   private afterResponse?: ({
     headers,
     data,
   }: {
     data: any;
-    headers: Record<string, any>;
+    headers: Options['headers'];
   }) => void;
 
   constructor({
     baseUrl,
     headers,
     beforeRequest,
+    beforeError,
     afterResponse,
   }: {
     baseUrl: string;
-    headers?: Record<string, any>;
+    headers?: Options['headers'];
     beforeRequest?: (options: Options) => void;
     afterResponse?: ({
       headers,
       data,
     }: {
       data: any;
-      headers: Record<string, any>;
+      headers: Options['headers'];
+    }) => void;
+    beforeError?: ({
+      error,
+      headers,
+      data,
+    }: {
+      error: HttpError;
+      data: any;
+      headers: Options['headers'];
     }) => void;
   }) {
     this.baseUrl = baseUrl;
     this.headers = headers;
     this.beforeRequest = beforeRequest;
+    this.beforeError = beforeError;
     this.afterResponse = afterResponse;
   }
 
   async fetch<T = any>(
     url: string,
     options: Options = {}
-  ): Promise<{ data: T; headers: Record<string, any> }> {
+  ): Promise<{ data: T; headers: Options['headers'] }> {
     if (this.beforeRequest) {
       await this.beforeRequest(options);
     }
@@ -69,11 +82,17 @@ export class VIF {
       : null;
 
     if (!res.ok) {
-      throw new HttpError({
+      const error = new HttpError({
         status: data.status ?? res.status ?? 500,
         message: data.message ?? res.statusText ?? 'Unknown error',
         code: data.code,
       });
+
+      if (this.beforeError) {
+        await this.beforeError({ error, headers, data });
+      }
+
+      throw error;
     }
 
     if (this.afterResponse) {

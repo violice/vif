@@ -1,3 +1,5 @@
+import { Options } from './types';
+
 export const normalize = (obj: Record<string, any>) => {
   let result: Record<string, any> = {};
   Object.keys(obj).forEach(key => {
@@ -9,11 +11,11 @@ export const normalize = (obj: Record<string, any>) => {
 };
 
 export const makeHeaders = (
-  instanceHeaders?: Record<string, any>,
-  optionsHeaders?: Record<string, any>,
-  optionsBody?: Record<string, any>,
+  instanceHeaders?: Options['headers'],
+  optionsHeaders?: Options['headers'],
+  optionsBody?: Options['body']
 ) => {
-  let customHeaders: Record<string, any> = {};
+  let customHeaders: Options['headers'] = {};
 
   if (optionsBody && typeof optionsBody === 'object') {
     customHeaders['content-type'] = 'application/json';
@@ -22,7 +24,7 @@ export const makeHeaders = (
   return normalize({ ...instanceHeaders, ...optionsHeaders, ...customHeaders });
 };
 
-export const makeBody = (optionsBody?: Record<string, any> | FormData) => {
+export const makeBody = (optionsBody?: Options['body']) => {
   if (!optionsBody) {
     return;
   }
@@ -32,7 +34,9 @@ export const makeBody = (optionsBody?: Record<string, any> | FormData) => {
   return JSON.stringify(normalize(optionsBody));
 };
 
-export const makeSearchString = (optionsSearchParams?: Record<string, any>) => {
+export const makeSearchString = (
+  optionsSearchParams?: Options['searchParams']
+) => {
   if (!optionsSearchParams) {
     return '';
   }
