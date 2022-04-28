@@ -60,7 +60,7 @@ export class VIF {
   async fetch<T = any>(
     url: string,
     options: Options = {}
-  ): Promise<{ data: T; headers: Options['headers'] }> {
+  ): Promise<{ data: T; headers: Record<string, string> }> {
     if (this.beforeRequest) {
       await this.beforeRequest(options);
     }
