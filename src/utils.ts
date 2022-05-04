@@ -42,3 +42,22 @@ export const makeSearchString = (
   }
   return `?${new URLSearchParams(normalize(optionsSearchParams)).toString()}`;
 };
+
+export const extractHeaders = (res: Response) => {
+  return Object.fromEntries(res.headers.entries());
+};
+
+export const extractData = async (
+  res: Response,
+  extractedHeaders: Record<string, string>
+) => {
+  try {
+    const data = extractedHeaders['content-type'].includes('application/json')
+      ? await res.json()
+      : null;
+    return data;
+  } catch (error) {
+    console.error(error);
+    return {};
+  }
+};

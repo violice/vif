@@ -1,6 +1,6 @@
 import { HttpError } from './http-error';
 import { Options } from './types';
-import { makeBody, makeHeaders, makeSearchString } from './utils';
+import { extractData, extractHeaders, makeBody, makeHeaders, makeSearchString } from './utils';
 
 export class VIF {
   private baseUrl: string;
@@ -75,11 +75,9 @@ export class VIF {
       }
     );
 
-    const headers = Object.fromEntries(res.headers.entries());
+    const headers = extractHeaders(res);
 
-    const data = headers['content-type'].includes('application/json')
-      ? await res.json()
-      : null;
+    const data = await extractData(res, headers);
 
     if (!res.ok) {
       const error = new HttpError({
