@@ -1,6 +1,12 @@
 import { HttpError } from './http-error';
 import { Options } from './types';
-import { extractData, extractHeaders, makeBody, makeHeaders, makeSearchString } from './utils';
+import {
+  extractData,
+  extractHeaders,
+  makeBody,
+  makeHeaders,
+  makeSearchString,
+} from './utils';
 
 export class VIF {
   private baseUrl: string;
@@ -116,10 +122,7 @@ export class VIF {
     return this.fetch<T>(url, { ...options, method: 'PATCH' });
   }
 
-  async delete<T = any>(
-    url: string,
-    options?: Omit<Options, 'method' | 'body'>
-  ) {
+  async delete<T = any>(url: string, options?: Omit<Options, 'method'>) {
     return this.fetch<T>(url, { ...options, method: 'DELETE' });
   }
 }
