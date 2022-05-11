@@ -1,0 +1,21 @@
+{
+  "name": "vif-example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "preinstall": "npx npm-force-resolutions",
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "alias": {
+    "scheduler/tracing": "../node_modules/scheduler/tracing-profiling"
+  },
+  "devDependencies": {
+    "parcel": "1.12.3",
+    "typescript": "^3.4.5"
+  },
+  "resolutions": {
+    "@babel/preset-env": "7.13.8"
+  }
+}

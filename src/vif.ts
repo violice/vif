@@ -87,8 +87,8 @@ export class VIF {
 
     if (!res.ok) {
       const error = new HttpError({
-        status: data.status ?? res.status ?? 500,
-        message: data.message ?? res.statusText ?? 'Unknown error',
+        status: data.status || res.status || 500,
+        message: data.message || res.statusText || 'Unknown error',
         code: data.code,
       });
 
