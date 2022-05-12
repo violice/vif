@@ -16,11 +16,9 @@ export const makeHeaders = (
   optionsBody?: Options['body']
 ) => {
   let customHeaders: Options['headers'] = {};
-
-  if (optionsBody && typeof optionsBody === 'object') {
+  if (optionsBody && !(optionsBody instanceof FormData)) {
     customHeaders['content-type'] = 'application/json';
   }
-
   return normalize({ ...instanceHeaders, ...optionsHeaders, ...customHeaders });
 };
 
@@ -28,7 +26,7 @@ export const makeBody = (optionsBody?: Options['body']) => {
   if (!optionsBody) {
     return;
   }
-  if (typeof optionsBody !== 'object') {
+  if (optionsBody instanceof FormData) {
     return optionsBody;
   }
   return JSON.stringify(normalize(optionsBody));
