@@ -50,7 +50,7 @@ export const extractData = async (
   extractedHeaders: Record<string, string>
 ) => {
   try {
-    const data = extractedHeaders['content-type'].includes('application/json')
+    const data = extractedHeaders['content-type']?.includes('application/json')
       ? await res.json()
       : null;
     return data;
